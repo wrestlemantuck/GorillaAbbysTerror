@@ -162,7 +162,8 @@ const ALLOWED_LIBS = new Set([
     "libeventflaghelper.so","libbattery.so","libglesv1_cm.so","libglesv2.so",
     "libglesv3.so","libegl.so","libstatssocket.so", "libcamera2ndk.so",
     "libsync.so", "libaudiopluginoculusspatializer.so", "lib_burst_generated.so",
-    "libovrmrclib.oculus.so",
+    "libovrmrclib.oculus.so", "android.hardware.graphics.mapper@3.0-impl-qti-display.so",
+    "gralloc.kona.so", "libhidltransport.so",
 ]);
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
