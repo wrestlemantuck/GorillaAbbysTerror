@@ -161,7 +161,8 @@ const ALLOWED_LIBS = new Set([
     "libfeaturejournal-aidl-v1-ndk.so","telemetryservice-aidl-cpp.so",
     "libeventflaghelper.so","libbattery.so","libglesv1_cm.so","libglesv2.so",
     "libglesv3.so","libegl.so","libstatssocket.so", "libcamera2ndk.so",
-    "libsync.so", "libaudiopluginoculusspatializer.so"
+    "libsync.so", "libaudiopluginoculusspatializer.so", "lib_burst_generated.so",
+    "libovrmrclib.oculus.so",
 ]);
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
