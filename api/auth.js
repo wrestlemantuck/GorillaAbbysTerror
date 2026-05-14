@@ -196,6 +196,29 @@ function getSupabase() {
     if (!url || !key) throw new Error("Supabase env vars not set");
     return createClient(url, key);
 }
+function normalizeBody(body) {
+    return {
+        device: body.device ?? "",
+        timestamp: body.timestamp ?? "",
+        nonce: body.nonce ?? "",
+        signature: body.signature ?? "",
+        platform: body.platform ?? "",
+        apkSig: body.apkSig ?? "",
+        installer: body.installer ?? "",
+        packageName: body.packageName ?? "",
+        appVersion: body.appVersion ?? "",
+        assetHash: body.assetHash ?? "",
+        metadataHash: body.metadataHash ?? "",
+        rawMapsHash: body.rawMapsHash ?? "",
+        loadedLibs: body.loadedLibs ?? [],
+        libsHash: body.libsHash ?? "",
+        fridaPort: body.fridaPort ?? false,
+        fridaFiles: body.fridaFiles ?? false,
+        isDebugged: body.isDebugged ?? false,
+        isRooted: body.isRooted ?? false,
+        isEmulator: body.isEmulator ?? false,
+    };
+}
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
