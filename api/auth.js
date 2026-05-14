@@ -235,12 +235,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ status: "SERVER_MISCONFIGURED" });
         }
 
-        // ── BAD REQUEST FIXED ────────────────────────────────────────────────
-        if (!device || !timestamp || !nonce || !signature) {
-            await sendWebhook("AUTH BAD REQUEST", { device });
-            return res.status(400).json({ status: "BAD_REQUEST" });
-        }
-
+        if (!device || !timestamp || !nonce || !signature) await sendWebhook("AUTH BAD REQUEST", { }); return res.status(400).json({ status: "BAD_REQUEST" });
         // ── Rate limit ───────────────────────────────────────────────────────
         const now = Date.now();
 
