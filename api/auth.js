@@ -207,27 +207,29 @@ export default async function handler(req, res) {
     try {
         const body = req.body || {};
 
+        const body = normalizeBody(req.body || {});
+        
         const {
-            device = "",
-            timestamp = "",
-            nonce = "",
-            signature = "",
-            platform = "",
-            apkSig = "",
-            installer = "",
-            packageName = "",
-            appVersion = "",
-            assetHash = "",
-            metadataHash = "",
-            rawMapsHash = "",
-            loadedLibs = [],
-            isDebugged = false,
-            isRooted = false,
-            isEmulator = false,
-            fridaPort = false,
-            fridaFiles = false,
+            device,
+            timestamp,
+            nonce,
+            signature,
+            platform,
+            apkSig,
+            installer,
+            packageName,
+            appVersion,
+            assetHash,
+            metadataHash,
+            rawMapsHash,
+            loadedLibs,
+            libsHash,
+            fridaPort,
+            fridaFiles,
+            isDebugged,
+            isRooted,
+            isEmulator,
         } = body;
-
         const SECRET = process.env.AUTH_SECRET;
         const JWT_SECRET = process.env.JWT_SECRET;
 
