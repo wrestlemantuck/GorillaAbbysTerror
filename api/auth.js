@@ -178,9 +178,7 @@ export async function sendWebhook(event, data = {}) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                event,
-                timestamp: new Date().toISOString(),
-                ...data
+                content: `**${event}**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``
             })
         });
 
