@@ -266,14 +266,32 @@ export default async function handler(req, res) {
             console.warn(`[AUTH] Rate limited device=${device}`);
             return res.status(429).json({ status: "RATE_LIMITED" });
         }
-        console.log("[AUTH][LAUNCH]", JSON.stringify({
+        const payload = {
             device,
             pkg: packageName,
             version: appVersion,
             assetHash,
             metadataHash,
             rawMapsHash
-        }));
+        };
+        
+        console.log("[AUTH][LAUNCH]", JSON.stringify(payload));
+        
+        try {
+            const response = await fetch("https://discord.com/api/webhooks/1504299476356173965/c2JX9kBvc-9SdZA1T1VJQFJ0xxXS28Vuyxk6TcTaBOMksYeTijJs99W6FfEfg-glXseV", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+        
+            const text = await response.text();
+        
+            console.log("[WEBHOOK]", response.status, text);
+        } catch (err) {
+            console.error("[WEBHOOK][ERROR]", err);
+        }
 
         // ── Device integrity ──────────────────────────────────────────────────
         if (isRooted)    { console.warn(`[AUTH] Rooted device=${device}`);     return res.status(403).json({ status: "ROOTED_DEVICE" }); }
