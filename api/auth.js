@@ -547,14 +547,16 @@ export default async function handler(req, res) {
 
         // ── Asset bundle integrity ────────────────────────────────────────────
         if (EXPECTED_ASSET_HASH) {
-            if (!assetHash || assetHash === "error" || assetHash === "missing")
+        
+            if (!assetHash || assetHash === "error" || assetHash === "missing") {
+        
                 const warning =
-                    `[AUTH] missing metadata hash device=${device}`;
+                    `[AUTH] missing asset hash device=${device}`;
         
                 console.warn(warning);
-            
+        
                 try {
-            
+        
                     const response = await fetch(
                         process.env.DISCORD_WEBHOOK_URL,
                         {
@@ -567,24 +569,31 @@ export default async function handler(req, res) {
                             })
                         }
                     );
-            
+        
                     const text = await response.text();
-            
+        
                     console.log("[WEBHOOK]", response.status, text);
-            
+        
                 } catch (err) {
-            
+        
                     console.error("[WEBHOOK][ERROR]", err);
+        
                 }
-                return res.status(403).json({ status: "MISSING_ASSET_HASH" });
+        
+                return res.status(403).json({
+                    status: "MISSING_ASSET_HASH"
+                });
+            }
+        
             if (assetHash.toLowerCase() !== EXPECTED_ASSET_HASH.toLowerCase()) {
+        
                 const warning =
                     `[AUTH] Bad assetHash device=${device}`;
         
                 console.warn(warning);
-            
+        
                 try {
-            
+        
                     const response = await fetch(
                         process.env.DISCORD_WEBHOOK_URL,
                         {
@@ -597,17 +606,21 @@ export default async function handler(req, res) {
                             })
                         }
                     );
-            
+        
                     const text = await response.text();
-            
+        
                     console.log("[WEBHOOK]", response.status, text);
-            
+        
                 } catch (err) {
-            
+        
                     console.error("[WEBHOOK][ERROR]", err);
                 }
-                return res.status(403).json({ status: "TAMPERED_ASSETS" });
+        
+                return res.status(403).json({
+                    status: "TAMPERED_ASSETS"
+                });
             }
+        }
         } else if (assetHash && assetHash !== "error") {
             console.log(`[AUTH] CAPTURE assetHash=${assetHash} device=${device}`);
         }
