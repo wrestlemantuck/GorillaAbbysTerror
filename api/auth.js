@@ -429,11 +429,43 @@ export default async function handler(req, res) {
         }
         if (ALLOWED_APK_SIGNATURES.size === 0) return res.status(500).json({ status: "SERVER_MISCONFIGURED" });
         if (!apkSig || apkSig === "error" || apkSig === "no_sig" || apkSig === "sig_mismatch") {
-            console.warn(`[AUTH] Bad apkSig=${apkSig} device=${device}`);
+            const warning = `[AUTH] Bad apksig got=${apkSig} device=${device}`;
+
+            console.warn(warning);
+    
+            try {
+                await fetch(process.env.DISCORD_WEBHOOK_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        content: `AUTH FAIL: ${warning}`
+                    })
+                });
+            } catch (err) {
+                console.error("[WEBHOOK][ERROR]", err);
+            }
             return res.status(403).json({ status: "INVALID_APK_SIGNATURE" });
         }
         if (!ALLOWED_APK_SIGNATURES.has(apkSig.toLowerCase())) {
-            console.warn(`[AUTH] Unknown apkSig=${apkSig} device=${device}`);
+            const warning = `[AUTH] Bad apksig got=${apkSig} device=${device}`;
+
+            console.warn(warning);
+    
+            try {
+                await fetch(process.env.DISCORD_WEBHOOK_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        content: `AUTH FAIL: ${warning}`
+                    })
+                });
+            } catch (err) {
+                console.error("[WEBHOOK][ERROR]", err);
+            }
             return res.status(403).json({ status: "INVALID_APK_SIGNATURE" });
         }
 
