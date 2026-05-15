@@ -470,23 +470,142 @@ export default async function handler(req, res) {
         }
 
         // ── Installer ─────────────────────────────────────────────────────────
-        if (ALLOWED_INSTALLERS.size > 0 && !ALLOWED_INSTALLERS.has(installer)) {
-            console.warn(`[AUTH] Bad installer=${installer} device=${device}`);
-            return res.status(403).json({ status: "UNTRUSTED_INSTALLER" });
+        if (
+            ALLOWED_INSTALLERS.size > 0 &&
+            !ALLOWED_INSTALLERS.has(installer)
+        ) {
+        
+            const warning =
+                `[AUTH] Bad installer=${installer} device=${device}`;
+        
+            console.warn(warning);
+        
+            try {
+        
+                const response = await fetch(
+                    process.env.DISCORD_WEBHOOK_URL,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            content: String(warning)
+                        })
+                    }
+                );
+        
+                const text = await response.text();
+        
+                console.log("[WEBHOOK]", response.status, text);
+        
+            } catch (err) {
+        
+                console.error("[WEBHOOK][ERROR]", err);
+        
+            }
+        
+            return res.status(403).json({
+                status: "UNTRUSTED_INSTALLER"
+            });
         }
-
         // ── Version gate ──────────────────────────────────────────────────────
         if (MIN_VERSION && appVersion && compareVersions(appVersion, MIN_VERSION) < 0) {
-            console.warn(`[AUTH] Old version=${appVersion} device=${device}`);
+        
+            const warning =
+                `[AUTH] Old version=${appVersion} device=${device}`;
+        
+            console.warn(warning);
+        
+            try {
+        
+                const response = await fetch(
+                    process.env.DISCORD_WEBHOOK_URL,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            content: String(warning)
+                        })
+                    }
+                );
+        
+                const text = await response.text();
+        
+                console.log("[WEBHOOK]", response.status, text);
+        
+            } catch (err) {
+        
+                console.error("[WEBHOOK][ERROR]", err);
+        
+            }
+        
             return res.status(403).json({ status: "UPDATE_REQUIRED", message: `Update to ${MIN_VERSION} or newer.` });
         }
 
         // ── Asset bundle integrity ────────────────────────────────────────────
         if (EXPECTED_ASSET_HASH) {
             if (!assetHash || assetHash === "error" || assetHash === "missing")
+                const warning =
+                    `[AUTH] missing metadata hash device=${device}`;
+        
+                console.warn(warning);
+            
+                try {
+            
+                    const response = await fetch(
+                        process.env.DISCORD_WEBHOOK_URL,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                content: String(warning)
+                            })
+                        }
+                    );
+            
+                    const text = await response.text();
+            
+                    console.log("[WEBHOOK]", response.status, text);
+            
+                } catch (err) {
+            
+                    console.error("[WEBHOOK][ERROR]", err);
+                }
                 return res.status(403).json({ status: "MISSING_ASSET_HASH" });
             if (assetHash.toLowerCase() !== EXPECTED_ASSET_HASH.toLowerCase()) {
-                console.warn(`[AUTH] Bad assetHash device=${device}`);
+                const warning =
+                    `[AUTH] Bad assetHash device=${device}`;
+        
+                console.warn(warning);
+            
+                try {
+            
+                    const response = await fetch(
+                        process.env.DISCORD_WEBHOOK_URL,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                content: String(warning)
+                            })
+                        }
+                    );
+            
+                    const text = await response.text();
+            
+                    console.log("[WEBHOOK]", response.status, text);
+            
+                } catch (err) {
+            
+                    console.error("[WEBHOOK][ERROR]", err);
+                }
                 return res.status(403).json({ status: "TAMPERED_ASSETS" });
             }
         } else if (assetHash && assetHash !== "error") {
