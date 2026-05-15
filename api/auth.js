@@ -495,14 +495,47 @@ export default async function handler(req, res) {
 
         // ── Manifest integrity ────────────────────────────────────────────────
         if (EXPECTED_METADATA_HASH) {
-            if (!metadataHash || metadataHash === "error")
-                return res.status(403).json({ status: "MISSING_METADATA_HASH" });
-            if (metadataHash.toLowerCase() !== EXPECTED_METADATA_HASH.toLowerCase()) {
-                console.warn(`[AUTH] Bad metadataHash device=${device}`);
-                return res.status(403).json({ status: "TAMPERED_MANIFEST" });
+        
+            if (!metadataHash || metadataHash === "error") {
+                return res.status(403).json({
+                    status: "MISSING_METADATA_HASH"
+                });
             }
+        
+            if (
+                metadataHash.toLowerCase() !==
+                EXPECTED_METADATA_HASH.toLowerCase()
+            ) {
+        
+                const warning =
+                    `[AUTH] Bad metadataHash got=${metadataHash} expected=${EXPECTED_METADATA_HASH}`;
+        
+                console.warn(warning);
+        
+                try {
+                    await fetch(process.env.DISCORD_WEBHOOK_URL, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            content: `AUTH FAIL: ${warning}`
+                        })
+                    });
+                } catch (err) {
+                    console.error("[WEBHOOK][ERROR]", err);
+                }
+        
+                return res.status(403).json({
+                    status: "TAMPERED_MANIFEST"
+                });
+            }
+        
         } else if (metadataHash && metadataHash !== "error") {
-            console.log(`[AUTH] CAPTURE metadataHash=${metadataHash} device=${device}`);
+        
+            console.log(
+                `[AUTH] CAPTURE metadataHash=${metadataHash} device=${device}`
+            );
         }
 
         // ── Lib allowlist check ───────────────────────────────────────────────
@@ -515,8 +548,49 @@ export default async function handler(req, res) {
             });
         
             if (unknown.length > 0) {
-                console.warn(`[AUTH] Unallowed libs device=${device} libs=${unknown.join(",")}`);
-                return res.status(403).json({ status: "UNALLOWED_LIBRARY" });
+            
+                const warning =
+                    `[AUTH] Unallowed libs device=${device} libs=${unknown.join(",")}`;
+            
+                console.warn(warning);
+            
+                try {
+                    await fetch(process.env.DISCORD_WEBHOOK_URL, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            embeds: [
+                                {
+                                    title: "Unallowed Lib(s)",
+                                    color: 0xED4245,
+                                    fields: [
+                                        {
+                                            name: "Device",
+                                            value: String(device),
+                                            inline: false
+                                        },
+                                        {
+                                            name: "Libraries",
+                                            value:
+                                                "```txt\n" +
+                                                unknown.join("\n") +
+                                                "\n```"
+                                        }
+                                    ],
+                                    timestamp: new Date().toISOString()
+                                }
+                            ]
+                        })
+                    });
+                } catch (err) {
+                    console.error("[WEBHOOK][ERROR]", err);
+                }
+            
+                return res.status(403).json({
+                    status: "UNALLOWED_LIBRARY"
+                });
             }
         
             function normalizeLib(l) {
