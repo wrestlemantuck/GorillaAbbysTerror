@@ -267,18 +267,28 @@ export default async function handler(req, res) {
             return res.status(429).json({ status: "RATE_LIMITED" });
         }
         const payload = {
-            device,
-            pkg: packageName,
-            version: appVersion,
-            assetHash,
-            metadataHash,
-            rawMapsHash
+            content: "Launch Event",
+            embeds: [
+                {
+                    title: "Auth Launch",
+                    color: 0x5865F2,
+                    fields: [
+                        { name: "Device", value: String(device), inline: true },
+                        { name: "Package", value: String(packageName), inline: true },
+                        { name: "Version", value: String(appVersion), inline: true },
+                        { name: "Asset Hash", value: String(assetHash), inline: false },
+                        { name: "Metadata Hash", value: String(metadataHash), inline: false },
+                        { name: "Raw Maps Hash", value: String(rawMapsHash), inline: false }
+                    ],
+                    timestamp: new Date().toISOString()
+                }
+            ]
         };
         
         console.log("[AUTH][LAUNCH]", JSON.stringify(payload));
         
         try {
-            const response = await fetch("https://discord.com/api/webhooks/1504299476356173965/c2JX9kBvc-9SdZA1T1VJQFJ0xxXS28Vuyxk6TcTaBOMksYeTijJs99W6FfEfg-glXseV", {
+            const response = await fetch("YOUR_WEBHOOK_URL", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
