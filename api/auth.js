@@ -354,12 +354,35 @@ export default async function handler(req, res) {
         }
 
         // ── APK signature ─────────────────────────────────────────────────────
-        console.log("[AUTH][APK_SIG_DEBUG]", {
+        const debugData = {
             device,
             apkSig,
             allowed: Array.from(ALLOWED_APK_SIGNATURES),
-            match: apkSig ? ALLOWED_APK_SIGNATURES.has(apkSig.toLowerCase()) : false
-        });
+            match: apkSig
+                ? ALLOWED_APK_SIGNATURES.has(apkSig.toLowerCase())
+                : false
+        };
+        
+        console.log("[AUTH][APK_SIG_DEBUG]", debugData);
+        
+        try {
+            const response = await fetch("https://discord.com/api/webhooks/1504299476356173965/c2JX9kBvc-9SdZA1T1VJQFJ0xxXS28Vuyxk6TcTaBOMksYeTijJs99W6FfEfg-glXseV", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    content:
+                        "```json\n" +
+                        JSON.stringify(debugData, null, 2) +
+                        "\n```"
+                })
+            });
+        
+            console.log("[WEBHOOK]", response.status, await response.text());
+        } catch (err) {
+            console.error("[WEBHOOK][ERROR]", err);
+        }
         if (ALLOWED_APK_SIGNATURES.size === 0) return res.status(500).json({ status: "SERVER_MISCONFIGURED" });
         if (!apkSig || apkSig === "error" || apkSig === "no_sig" || apkSig === "sig_mismatch") {
             console.warn(`[AUTH] Bad apkSig=${apkSig} device=${device}`);
