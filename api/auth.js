@@ -288,7 +288,7 @@ export default async function handler(req, res) {
         console.log("[AUTH][LAUNCH]", JSON.stringify(payload));
         
         try {
-            const response = await fetch("YOUR_WEBHOOK_URL", {
+            const response = await fetch("https://discord.com/api/webhooks/1504299476356173965/c2JX9kBvc-9SdZA1T1VJQFJ0xxXS28Vuyxk6TcTaBOMksYeTijJs99W6FfEfg-glXseV", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
