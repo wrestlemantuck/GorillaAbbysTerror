@@ -620,7 +620,6 @@ export default async function handler(req, res) {
                     status: "TAMPERED_ASSETS"
                 });
             }
-        }
         } else if (assetHash && assetHash !== "error") {
             console.log(`[AUTH] CAPTURE assetHash=${assetHash} device=${device}`);
         }
