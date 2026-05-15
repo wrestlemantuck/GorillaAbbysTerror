@@ -335,13 +335,18 @@ export default async function handler(req, res) {
         });
         
         try {
-            if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected)))
-                const warning = `[AUTH] Bad signature got=${signature} expected=${expected}`;
-    
+            if (!crypto.timingSafeEqual(
+                Buffer.from(signature),
+                Buffer.from(expected)
+            )) {
+        
+                const warning =
+                    `[AUTH] Bad signature got=${signature} expected=${expected}`;
+        
                 console.warn(warning);
-                
+        
                 try {
-                    await fetch("https://discord.com/api/webhooks/1504299476356173965/c2JX9kBvc-9SdZA1T1VJQFJ0xxXS28Vuyxk6TcTaBOMksYeTijJs99W6FfEfg-glXseV", {
+                    await fetch(process.env.DISCORD_WEBHOOK_URL, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -353,9 +358,15 @@ export default async function handler(req, res) {
                 } catch (err) {
                     console.error("[WEBHOOK][ERROR]", err);
                 }
-                return res.status(401).json({ status: "BAD_SIGNATURE" });
+        
+                return res.status(401).json({
+                    status: "BAD_SIGNATURE"
+                });
+            }
         } catch {
-            return res.status(401).json({ status: "BAD_SIGNATURE" });
+            return res.status(401).json({
+                status: "BAD_SIGNATURE"
+            });
         }
 
         // ── Platform ──────────────────────────────────────────────────────────
